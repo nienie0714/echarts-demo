@@ -10,24 +10,19 @@ const router = [
     component: () => import('@/views/introduction')
   },
   {
-    name: 'lifecycle',
-    path: '/lifecycle',
-    component: () => import('@/views/lifecycle')
+    name: 'bar',
+    path: '/bar',
+    component: () => import('@/views/bar')
   },
   {
-    name: 'render',
-    path: '/render',
-    component: () => import('@/views/render')
+    name: 'pie',
+    path: '/pie',
+    component: () => import('@/views/pie')
   },
   {
-    name: 'event',
-    path: '/event',
-    component: () => import('@/views/event')
-  },
-  {
-    name: 'component',
-    path: '/component',
-    component: () => import('@/views/component')
+    name: 'gauge',
+    path: '/gauge',
+    component: () => import('@/views/gauge')
   },
   {
     name: 'axios',
@@ -35,9 +30,14 @@ const router = [
     component: () => import('@/views/axios')
   },
   {
-    name: 'questions',
-    path: '/questions',
-    component: () => import('@/views/questions')
+    name: 'stand',
+    path: '/stand',
+    component: () => import('@/views/stand')
+  },
+  {
+    name: 'statistics',
+    path: '/statistics',
+    component: () => import('@/views/statistics')
   },
   {
     path: '*',
@@ -47,6 +47,6 @@ const router = [
   //   path: '/',
   //   redirect: '/index'
   // }
-];
+]
 
-export default router;
+export default router

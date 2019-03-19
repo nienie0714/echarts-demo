@@ -11,16 +11,16 @@
     data() {
       return {
         transitionName: ''
-      };
-    },
+      }
+  },
     watch: {
       '$route'(to, from) {
-        const toDepth = to.path.substr(1) ? to.path.substr(1).split('/').length : 0;
-        const fromDepth = from.path.substr(1) ? from.path.substr(1).split('/').length : 0;
-        this.transitionName = toDepth < fromDepth ? 'slide-right' : 'slide-left';
-      }
+        const toDepth = to.path.substr(1) ? to.path.substr(1).split('/').length : 0
+      const fromDepth = from.path.substr(1) ? from.path.substr(1).split('/').length : 0
+      this.transitionName = toDepth < fromDepth ? 'slide-right' : 'slide-left'
     }
-  };
+    }
+  }
 </script>
 
 <style lang="less">

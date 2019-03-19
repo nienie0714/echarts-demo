@@ -1,23 +1,23 @@
-import Vue from 'vue';
-import VueRouter from 'vue-router';
-import routes from './routes';
+import Vue from 'vue'
+import VueRouter from 'vue-router'
+import routes from './routes'
 
-Vue.use(VueRouter);
+Vue.use(VueRouter)
 
 const router = new VueRouter({
   mode: 'hash',
   linkActiveClass: 'is-active',
   routes
-});
+})
 
 router.beforeEach((to, from, next) => {
   //解决messagebox在切换路由时不取消的bug
   if (document.querySelector('.mint-msgbox-cancel')) {
-    document.querySelector('.mint-msgbox-cancel').click();
+    document.querySelector('.mint-msgbox-cancel').click()
   }
-  return next();
-});
+  return next()
+})
 
-router.afterEach(() => {});
+router.afterEach(() => {})
 
-export default router;
+export default router

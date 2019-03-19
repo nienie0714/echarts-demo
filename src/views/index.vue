@@ -10,9 +10,9 @@
 </template>
 
 <script>
-  import { mapActions } from 'vuex';
+import { mapActions } from 'vuex'
 
-  export default {
+export default {
     data() {
       return {
         catalog: [{
@@ -20,35 +20,35 @@
           path: 'introduction'
         },
         {
-          title: '生命周期',
-          path: 'lifecycle'
+          title: '柱状图',
+          path: 'bar'
         },
         {
-          title: '渲染',
-          path: 'render'
+          title: '饼状图',
+          path: 'pie'
         },
         {
-          title: '事件',
-          path: 'event'
-        },
-        {
-          title: '组件',
-          path: 'component'
+          title: '仪表图',
+          path: 'gauge'
         },
         {
           title: 'axios',
           path: 'axios'
         },
         {
-          title: '问题',
-          path: 'questions'
+          title: 'stand',
+          path: 'stand'
+        },
+        {
+          title: '统计页面',
+          path: 'statistics'
         }]
-      };
-    },
+      }
+  },
     methods: {
       ...mapActions(['ajax'])
     }
-  };
+  }
 </script>
 
 <style lang="less" scoped>
