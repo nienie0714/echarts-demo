@@ -218,6 +218,7 @@ export default {
           center: ['30%', '40%'],
           avoidLabelOverlap: false,
           clickable: false,
+          silent: true,// 不触发事件
           label: {
               normal: {
                   show: false,
@@ -246,6 +247,7 @@ export default {
           center: ['73%', '40%'],
           avoidLabelOverlap: false,
           clickable: false,
+          silent: true,//不触发事件
           label: {
               normal: {
                   show: false,
@@ -315,6 +317,7 @@ export default {
           center: ['30%', '40%'],
           avoidLabelOverlap: false,
           clickable: false,
+          silent: true,//不触发事件
           label: {
               normal: {
                   show: false,
@@ -343,6 +346,7 @@ export default {
           center: ['73%', '40%'],
           avoidLabelOverlap: false,
           clickable: false,
+          silent: true,//不触发事件
           label: {
               normal: {
                   show: false,
