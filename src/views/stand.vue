@@ -2,7 +2,7 @@
   <div class="render pt">
     <v-header title="饼状图" back></v-header>
     <div class="content">
-      <div id="standChart" :style="{width: '400px', height: '300px'}"></div>
+      <div id="fltAChartDb" :style="{width: '400px', height: '200px'}"></div>
     </div>
   </div>
 </template>
@@ -13,65 +13,127 @@ import { mapActions } from 'vuex'
 export default {
   data() {
     return {
-      standChart: '',
-      standOption: {
-        title: {
-          show: true,
-          text: '机位使用情况',
-          x: 'center'
-        },
-        tooltip: {
-          trigger: 'item',
-          formatter: "{a} <br/>{b} : {c} ({d}%)"
-        },
-        legend: {
-          orient: 'horizontal',
-          top: '10%',
-          data: ['近机位(占用)', '远机位(占用)', '近机位(空闲)', '远机位(空闲)', '不可用']
-        },
+      fltAChartDb: '',
+      fltADbOption: {
         series: [{
-          name: '机位使用情况',
+          name: '当前完成情况',
           type: 'pie',// pie:饼图
-          radius: '55%',
-          center: ['50%', '60%'],
-          data: [
-            {value: this.stand.nearly, name: '近机位(占用)'},
-            {value: this.stand.nearlyFree, name: '远机位(占用)'},
-            {value: this.stand.far, name: '近机位(空闲)'},
-            {value: this.stand.farFree, name: '远机位(空闲)'},
-            {value: this.stand.disabled, name: '不可用'}
-          ]
+          radius: ['40%', '55%'],
+          center: ['30%', '40%'],
+          avoidLabelOverlap: false,
+          label: {
+              normal: {
+                  show: false,
+                  position: 'center',
+                  formatter: '{b}\n{d}%'
+              },
+              emphasis: {
+                  show: true,
+                  textStyle: {
+                      fontSize: '14',
+                      fontWeight: 'bold'
+                  }
+              }
+          },
+          labelLine: {
+              normal: {
+                  show: false
+              }
+          },
+          data: []
+        },
+        {
+          name: '当天完成情况',
+          type: 'pie',// pie:饼图
+          radius: ['40%', '55%'],
+          center: ['73%', '40%'],
+          avoidLabelOverlap: false,
+          label: {
+              normal: {
+                  show: false,
+                  position: 'center',
+                  formatter: '{b}\n{d}%'
+              },
+              emphasis: {
+                  show: true,
+                  textStyle: {
+                      fontSize: '14',
+                      fontWeight: 'bold'
+                  }
+              }
+          },
+          labelLine: {
+              normal: {
+                  show: false
+              }
+          },
+          data: []
         }]
-      },
-      standData: {
-        nearly: 0,
-        nearlyFree: 0,
-        far: 0,
-        farFree: 0,
-        disabled: 0
       }
     }
   },
   mounted() {
-    this.standChart = this.$echarts.init(document.getElementById('standChart'))
-    this.standChart.setOption(this.standOption)
+    this.fltAChartDb = this.$echarts.init(document.getElementById('fltAChartDb'))
+    this.fltAChartDb.setOption(this.fltADbOption)
   },
   created() {
-    this.queryToday()
+    this.queryFlightA()
   },
   methods: {
     ...mapActions(['ajax']),
-    queryToday() {
+    queryFlightA() {
       let that = this
       this.ajax({
-        name: 'queryStand',
-        data: {}
+        name: 'queryFlightA',
+        data: { "inOutFlag": "A" }
       }).then(res => {
-        let temp = that.standOption
-        let nearlyArr = res.nearlyStand.split('/')
-        let farArr = res.farStand.split('/')
-        temp.series[0].data = [parseInt(nearlyArr[0]), parseInt(nearlyArr[1]), parseInt(farArr[0]), parseInt(farArr[1]), parseInt(res.disableStand)]
-        that.standChart.setOption(temp)
+        // charts
+        let temp = that.fltADbOption
+        let currCompletionRate = res.currCompletionRate
+        let dayCompletionRate = res.dayCompletionRate
+        // 准点率
+        let normalRate = res.normalRate
+        // 正常进港
+        let normalExecFlight = res.normalExecFlight
+        // 延误进港
+        let execDlyFlight = res.execDlyFlight
+        // 当日取消
+        let canFlight = res.canFlight
+        // 未执行
+        let noExecFligth = res.noExecFligth
+        temp.series[0].data = [
+          { value: currCompletionRate*100, name: '当前完成率'},
+          { value: (1-currCompletionRate)*100, name: '当前未完成率'}
+          ]
+        temp.series[1].data = [
+          { value: dayCompletionRate*100, name: '当天完成率'},
+          { value: (1-dayCompletionRate)*100, name: '当天未完成率'}
+          ]
+        that.fltAChartDb.setOption(temp)
+
+        let index = 0
+        that.fltAChartDb.dispatchAction({type: 'highlight',seriesIndex: 0, dataIndex: 0})
+        that.fltAChartDb.on('mouseover', function(e) {
+        if (e.dataIndex != index) {
+            that.fltAChartDb.dispatchAction({type: 'downplay', seriesIndex: 0, dataIndex: index})
+          }
+        })
+        that.fltAChartDb.on('mouseout',function(e) {
+          index = e.dataIndex
+          that.fltAChartDb.dispatchAction({type: 'highlight',seriesIndex: 0,dataIndex: e.dataIndex})
+        })
+
+        let index2 = 0
+        that.fltAChartDb.dispatchAction({type: 'highlight',seriesIndex: 1, dataIndex: 0})
+        that.fltAChartDb.on('mouseover', function(e) {
+        if (e.dataIndex != index2) {
+            that.fltAChartDb.dispatchAction({type: 'downplay', seriesIndex: 1, dataIndex: index2})
+          }
+        })
+        that.fltAChartDb.on('mouseout',function(e) {
+          index2 = e.dataIndex
+          that.fltAChartDb.dispatchAction({type: 'highlight',seriesIndex: 1,dataIndex: e.dataIndex})
+        })
       })
     }
   }
