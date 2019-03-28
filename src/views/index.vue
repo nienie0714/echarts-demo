@@ -36,7 +36,7 @@ export default {
           path: 'axios'
         },
         {
-          title: 'stand',
+          title: 'Echarts临时',
           path: 'stand'
         },
         {
