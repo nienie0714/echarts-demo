@@ -9,7 +9,7 @@ let api = {
   queryFlightD: { url: 'aoms-statistics/statistics/viewFlightStat/queryToday' }, // 查询当天的进港航班数据 :进港{"inOutFlag"："A"} 出港{"inOutFlag"："D"}
   queryFlight: { url: 'aoms-statistics/statistics/aomsFlightStat/queryToday' }, // 查询当日航班保障实况
   queryStand: { url: 'aoms-statistics/statistics/viewStandStat/queryToday' }, // 查询机位使用情况
-  queryPassenger: { url: 'aoms-statistics/statistics/viewPassenger/queryToday' } // 查询机位使用情况
+  queryPassenger: { url: 'aoms-statistics/statistics/viewPassenger/queryToday' } // 查询旅客
 }
 
 for (var k in api) {
