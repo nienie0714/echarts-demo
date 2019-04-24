@@ -11,10 +11,10 @@
         <mt-tab-container-item id="1">
           <mt-swipe :auto="0" :style="{height: '200px'}">
             <mt-swipe-item>
-              <div id="fltAChartDb" :style="{width: '400px', height: '200px'}"></div>
+              <div id="fltAChartDb" :style="{width: '320px', height: '200px', margin: '0 auto'}"></div>
             </mt-swipe-item>
             <mt-swipe-item>
-              <div id="fltAChart" :style="{width: '400px', height: '200px'}"></div>
+              <div id="fltAChart" :style="{width: '320px', height: '200px', margin: '0 auto'}"></div>
             </mt-swipe-item>
           </mt-swipe>
           <div class="flightA-flex-wrapper">
@@ -34,15 +34,19 @@
               <div>{{queryFltA.dlyFlight}}</div>
               <div>当前延误</div>
             </div>
+            <div class="flightA-flex-item">
+              <div>{{queryFltA.normalRate}}%</div>
+              <div>准点率</div>
+            </div>
           </div>
         </mt-tab-container-item>
         <mt-tab-container-item id="2">
           <mt-swipe :auto="0" :style="{height: '200px'}">
             <mt-swipe-item>
-              <div id="fltDChartDb" :style="{width: '400px', height: '200px'}"></div>
+              <div id="fltDChartDb" :style="{width: '320px', height: '200px', margin: '0 auto'}"></div>
             </mt-swipe-item>
             <mt-swipe-item>
-              <div id="fltDChart" :style="{width: '400px', height: '200px'}"></div>
+              <div id="fltDChart" :style="{width: '320px', height: '200px', margin: '0 auto'}"></div>
             </mt-swipe-item>
           </mt-swipe>
           <!-- <div id="fltDChart" :style="{width: '400px', height: '200px'}"></div> -->
@@ -62,6 +66,10 @@
             <div class="flightA-flex-item">
               <div>{{queryFltD.dlyFlight}}</div>
               <div>当前延误</div>
+            </div>
+            <div class="flightA-flex-item">
+              <div>{{queryFltD.normalRate}}%</div>
+              <div>准点率</div>
             </div>
           </div>
         </mt-tab-container-item>
@@ -85,6 +93,13 @@
             <div class="fc-blue">{{fltGuarantee.completionRate}}%</div>
             <div>完成率</div>
           </div>
+        </div>
+      </div>
+      <div class="pass-out-wrapper">
+        <div class="pass-title">旅客实时情况&nbsp;&nbsp;&nbsp;{{queryPassData.statDate.substring(11)}}</div>
+        <!--  -->
+        <div class="pass-wrapper">
+          <div id="passChart" :style="{width: '330px', height: '200px', margin: '0 auto', marginTop: '-23px'}"></div>
         </div>
       </div>
       <div class="flight-out-wrapper">
@@ -132,7 +147,7 @@
       <div class="flight-guarantee-wrapper mb70 hei320">
         <div class="flight-title ">机位使用实况</div>
         <div class="stand-flex-wrapper">
-          <div id="standChart" :style="{width: '250px', height: '150px'}"></div>
+          <div id="standChart" :style="{width: '200px', height: '150px'}"></div>
           <div class="stand-flex-font">
             <div class="flight-flex-item">
               <div>近机位</div>
@@ -150,6 +165,7 @@
         </div>
       </div>
     </div>
+    
   </div>
 </template>
 
@@ -206,11 +222,20 @@ export default {
           //   }
           // },
           center: ['35%', '40%'],
-          data: []
+          data: [
+          { value: 0, name: '正常进港'},
+          { value: 0, name: '延误进港'},
+          { value: 0, name: '当日取消'},
+          { value: 0, name: '未执行'}
+          ]
         }]
       },
       fltAChartDb: '',
       fltADbOption: {
+        tooltip: {
+          show: true,
+          trigger: 'none'
+        },
         series: [{
           name: '当前完成情况',
           type: 'pie',// pie:饼图
@@ -218,7 +243,7 @@ export default {
           center: ['30%', '40%'],
           avoidLabelOverlap: false,
           clickable: false,
-          silent: true,// 不触发事件
+          silent: true,
           label: {
               normal: {
                   show: false,
@@ -238,7 +263,10 @@ export default {
                   show: false
               }
           },
-          data: []
+          data: [
+          { value: 0, name: '当前完成率'},
+          { value: 0, name: '当前未完成率'}
+          ]
         },
         {
           name: '当天完成情况',
@@ -247,7 +275,7 @@ export default {
           center: ['73%', '40%'],
           avoidLabelOverlap: false,
           clickable: false,
-          silent: true,//不触发事件
+          silent: true,
           label: {
               normal: {
                   show: false,
@@ -267,7 +295,10 @@ export default {
                   show: false
               }
           },
-          data: []
+          data: [
+          { value: 0, name: '当天完成率'},
+          { value: 0, name: '当天未完成率'}
+          ]
         }]
       },
       // 出港-----------------------------------------------------------
@@ -305,7 +336,12 @@ export default {
           radius: '60%',
           startAngle: 45, //起始角度
           center: ['35%', '40%'],
-          data: []
+          data: [
+          { value: 0, name: '正常出港'},
+          { value: 0, name: '延误出港'},
+          { value: 0, name: '当日取消'},
+          { value: 0, name: '未执行'}
+          ]
         }]
       },
       fltDChartDb: '',
@@ -317,7 +353,7 @@ export default {
           center: ['30%', '40%'],
           avoidLabelOverlap: false,
           clickable: false,
-          silent: true,//不触发事件
+          silent: true,
           label: {
               normal: {
                   show: false,
@@ -337,7 +373,10 @@ export default {
                   show: false
               }
           },
-          data: []
+          data: [
+          { value: 0, name: '当前完成率'},
+          { value: 0, name: '当前未完成率'}
+          ]
         },
         {
           name: '当天完成情况',
@@ -346,7 +385,7 @@ export default {
           center: ['73%', '40%'],
           avoidLabelOverlap: false,
           clickable: false,
-          silent: true,//不触发事件
+          silent: true,
           label: {
               normal: {
                   show: false,
@@ -366,7 +405,10 @@ export default {
                   show: false
               }
           },
-          data: []
+          data: [
+          { value: 0, name: '当天完成率'},
+          { value: 0, name: '当天未完成率'}
+          ]
         }]
       },
       // 保障-----------------------------------------------------------
@@ -375,6 +417,91 @@ export default {
         "servicedFlight": 0,
         "servicingFlight": 0,
         "completionRate": 0
+      },
+      // 旅客-----------------------------------------------------------
+      passTimer: null,
+      queryPassData: {
+        "statDate": "2019-03-18 00:00:00",
+        "checkinNum": 100,
+        "VerifyNum": 80,
+        "boardNum": 60,
+        "isolationNum": 20,
+        "plannedTotalNum": 100
+      },
+      passChart: '',
+      passOption: {
+        tooltip: {
+          trigger: 'axis'
+        },
+        toolbox: {
+          show: true,
+          feature: {
+              myTool1: {
+                  show: true,
+                  title: '刷新',
+                  icon: 'M3.8,33.4 M47,18.9h9.8V8.7 M56.3,20.1 C52.1,9,40.5,0.6,26.8,2.1C12.6,3.7,1.6,16.2,2.1,30.6 M13,41.1H3.1v10.2 M3.7,39.9c4.2,11.1,15.8,19.5,29.5,18 c14.2-1.6,25.2-14.1,24.7-28.5',
+                  iconStyle: {
+                    textPosition: 'top'
+                  },
+                  onclick: this.queryPassenger
+              }
+          }
+        },
+        xAxis: [
+          {
+            type: 'category',
+            boundaryGap: true, // 类目起始和结束两端空白策略，默认为true留空，false则顶头
+            data : ['已值机', '已安检', '已登机', '隔离区', '计划出港'],
+            axisLabel: {
+              width: 20,
+              interval: 0,
+              rotate: 30,
+              margin: 10
+            }
+          }
+        ],
+        grid: {
+          left: '2%',
+          right: '2%',
+          bottom: '10%',
+          containLabel: true
+        },
+        yAxis: [
+          {
+            type: 'value',
+            name: '旅客数',
+            nameTextStyle: {
+              align: 'left'
+            },
+            nameGap: 20
+          }
+        ],
+        series: [{
+          name: '旅客数',
+          type: 'bar',
+          data: [1000, 8, 600, 200, 1000],
+          label: {
+            normal: {
+              show: true,
+              position: 'top',
+              color: '#027fcf',
+              fontWeight: 'bold',
+              fontSize: 14
+            }
+          },
+          itemStyle:{
+            normal:{
+              color:function(params) {
+                if(params.value > 0 && params.value < 500) {
+                  return "#FE8463"
+                } else if (params.value >=500 && params.value<=900) {
+                  return "#27727B"
+                }
+                return "#9BCA63"
+              }
+            }
+          }
+        }]
       },
       // 航班-----------------------------------------------------------
       queryStandData: {
@@ -400,7 +527,7 @@ export default {
         series: [{
           name: '机位使用情况',
           type: 'pie',// pie:饼图
-          radius: '55%',
+          radius: '45%',
           center: ['50%', '50%'],
           data: [
             {value: 0, name: '占用'},
@@ -426,12 +553,21 @@ export default {
     // 机位
     this.standChart = this.$echarts.init(document.getElementById('standChart'))
     this.standChart.setOption(this.standOption)
+
+    // 旅客
+    this.passChart = this.$echarts.init(document.getElementById('passChart'))
+    this.passChart.setOption(this.passOption)
   },
   created() {
     this.queryFlightA()
     this.queryFlightD()
     this.queryFlight()
     this.queryStand()
+    clearInterval(this.passTimer)
+    this.queryPassenger()
+  },
+  distroyed() {
+    clearInterval(this.passTimer)
   },
   methods: {
     ...mapActions(['ajax']),
@@ -452,7 +588,8 @@ export default {
         let currCompletionRate = res.currCompletionRate
         let dayCompletionRate = res.dayCompletionRate
         // 准点率
-        let normalRate = res.normalRate
+        let normalRate = (res.normalRate * 100).toFixed(1)
+        this.queryFltA.normalRate = normalRate
         // 正常进港
         this.queryFltA.normalExecFlight = res.normalExecFlight
         // 延误进港
@@ -530,7 +667,8 @@ export default {
         let currCompletionRate = res.currCompletionRate
         let dayCompletionRate = res.dayCompletionRate
         // 准点率
-        let normalRate = res.normalRate
+        let normalRate = (res.normalRate * 100).toFixed(1)
+        this.queryFltD.normalRate = normalRate
         // 正常进港
         this.queryFltD.normalExecFlight = res.normalExecFlight
         // 延误进港
@@ -554,7 +692,6 @@ export default {
         this.queryFltD.rtnFlight = res.rtnFlight
         this.queryFltD.noExecDlyFlight = res.noExecDlyFlight
         let abnor = (res.abnormalRate * 100).toFixed(1)
-        console.log(res.abnormalRate,  (res.abnormalRate * 100).toFixed(1), abnor)
         this.queryFltD.abnormalRate = abnor
 
         // 完成率 Chart
@@ -595,6 +732,35 @@ export default {
         this.fltGuarantee.servicingFlight = res.servicingFlight
         this.fltGuarantee.completionRate = res.completionRate
       })
+    },
+    // 旅客
+    queryPassenger() {
+      let that = this
+      // this.ajax({
+      //   name: 'queryPassenger',
+      //   data: {}
+      // }).then(res => {
+      //   // this.queryStandData.nearlyStand = res.nearlyStand
+      //   // this.queryStandData.farStand = res.farStand
+      //   // this.queryStandData.disableStand = res.disableStand
+
+      //   // charts   todo
+      //   let temp = that.passOption
+
+      //   temp.series[0].data = [res.data.checkinNum, res.data.VerifyNum, res.data.boardNum, res.data.isolationNum, res.data.isolationNum]
+      //   that.passChart.setOption(temp)
+      // })
+
+      // charts   todo
+      // new Date("2019-03-18 00:9:00").getTime() - 8.64e7
+      this.passTimer = setInterval(() => {
+        console.log(11)
+        this.passOption.series[0].data = []
+        this.passOption.series[0].data = [1000, 8, 600, 200, 1200]
+        this.passChart.setOption(this.passOption)
+        // this.queryPassData.statDate = new Date("2019-03-18 00:9:00").getTime() - 8.64e7
+        // this.queryPassData.statDate = new Date(res.headers.date)
+      }, 600000) // 十分钟刷新一次
     },
     // 机位使用情况
     queryStand() {
@@ -637,7 +803,7 @@ export default {
   position: relative;
 }
 .flt-tab-container {
-  height: 500px;
+  height: 580px;
   // background: linear-gradient(to right, rgb(9,57,153) , rgb(13,103,198));
   background: #F3F3F3;
 }
@@ -654,13 +820,14 @@ export default {
       height: 50%;
       // color: #fff;
       color: rgb(9,57,153);
-      font-size: 20px;/*no*/
+      font-size: 16px;/*no*/
       font-weight: 1000;
       display: flex;
       justify-content: center;
       margin-bottom: 10px;
     }
     div:nth-of-type(2) {
+      font-size: 14px;/*no*/
       height: 50%;
       // color: rgba(255, 255, 255, 0.6);
       color: rgb(13,103,198);
@@ -670,7 +837,7 @@ export default {
   }
 }
 .flight-guarantee-wrapper {
-  height: 200px;
+  height: 220px;
   background-color: #fff;
   margin: 0 30px 22px 30px;
   padding: 14px 16px; 
@@ -690,13 +857,14 @@ export default {
       div:nth-of-type(1) {
         height: 50%;
         color: #1f3666;
-        font-size: 20px;/*no*/
+        font-size: 16px;/*no*/
         font-weight: 1000;
         display: flex;
         justify-content: center;
         margin-bottom: 10px;
       }
       div:nth-of-type(2) {
+        font-size: 14px;/*no*/
         height: 50%;
         color: #4c6699;
         display: flex;
@@ -707,7 +875,7 @@ export default {
 }
 
 .flight-out-wrapper {
-  height: 350px;
+  height: 370px;
   background-color: #fff;
   margin: 0 30px 22px 30px;
   padding: 14px 16px; 
@@ -732,13 +900,14 @@ export default {
       div:nth-of-type(1) {
         height: 50%;
         color: #1f3666;
-        font-size: 20px;/*no*/
+        font-size: 16px;/*no*/
         font-weight: 1000;
         display: flex;
         justify-content: center;
         margin-bottom: 10px;
       }
       div:nth-of-type(2) {
+        font-size: 14px;/*no*/
         height: 50%;
         color: #4c6699;
         display: flex;
@@ -751,7 +920,7 @@ export default {
   margin-bottom: 70px;
 }
 .hei320 {
-  height: 320px;
+  height: 370px;
 }
 .stand-flex-wrapper {
   display: flex;
@@ -766,12 +935,13 @@ export default {
       height: 70px;
       align-items: center;
       div:nth-of-type(1) {
-        width: 100px;
+        font-size: 14px;/*no*/
+        width: 110px;
         color: #4c6699;
       }
       div:nth-of-type(2) {
         color: #1f3666;
-        font-size: 20px;/*no*/
+        font-size: 16px;/*no*/
         font-weight: 1000;
       }
     }
@@ -785,5 +955,23 @@ export default {
 }
 .statics-wrapper {
   width: 200%;
+}
+
+.pass-out-wrapper {
+  height: 450px;
+  background-color: #fff;
+  margin: 0 30px 22px 30px;
+  padding: 14px 16px; 
+  border-radius: 22px;
+  box-shadow: darkgrey 10px 10px 30px 5px;
+  .pass-title {
+    color: #8fa3cc;
+    font-size: 14px;/*no*/
+    margin-bottom: 32px;
+  }
+  .pass-wrapper {
+    display: flex;
+    justify-content: space-between;
+  }
 }
 </style>

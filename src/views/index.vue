@@ -41,7 +41,7 @@ export default {
         },
         {
           title: '统计页面',
-          path: 'statistics'
+          path: 'all'
         }]
       }
   },

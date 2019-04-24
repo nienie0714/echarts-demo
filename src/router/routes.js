@@ -35,9 +35,21 @@ const router = [
     component: () => import('@/views/stand')
   },
   {
-    name: 'statistics',
-    path: '/statistics',
-    component: () => import('@/views/statistics')
+    name: 'all',
+    path: '/all',
+    component: () => import('@/views/all'),
+    redirect: '/statistic',
+    children: [
+      {
+        path: '/statistic',
+        name: '统计信息',
+        component: () => import('@/views/statistic')
+      },
+      {
+        path: '/work',
+        name: '值班信息',
+        component: () => import('@/views/work')
+      }]
   },
   {
     path: '*',
