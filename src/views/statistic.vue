@@ -96,8 +96,8 @@
         </div>
       </div>
       <div class="pass-out-wrapper">
-        <div class="pass-title">旅客实时情况&nbsp;&nbsp;&nbsp;{{queryPassData.statDate.substring(11)}}</div>
-        <!--  -->
+        <div class="pass-title">旅客实时情况</div>
+        <!-- &nbsp;&nbsp;&nbsp;{{queryPassData.statDate.substring(11)}} -->
         <div class="pass-wrapper">
           <div id="passChart" :style="{width: '330px', height: '200px', margin: '0 auto', marginTop: '-23px'}"></div>
         </div>
@@ -421,12 +421,12 @@ export default {
       // 旅客-----------------------------------------------------------
       passTimer: null,
       queryPassData: {
-        "statDate": "2019-03-18 00:00:00",
-        "checkinNum": 100,
-        "VerifyNum": 80,
-        "boardNum": 60,
-        "isolationNum": 20,
-        "plannedTotalNum": 100
+        "statDate": '',
+        "checkinNum": 0,
+        "verifyNum": 0,
+        "boardNum": 0,
+        "isolationNum": 0,
+        "plannedTotalNum": 0
       },
       passChart: '',
       passOption: {
@@ -443,7 +443,7 @@ export default {
                   iconStyle: {
                     textPosition: 'top'
                   },
-                  onclick: this.queryPassenger
+                  onclick: this.postPassenger
               }
           }
         },
@@ -735,32 +735,24 @@ export default {
     },
     // 旅客
     queryPassenger() {
+      this.postPassenger()
+      this.queryPassengerInterval()
+    },
+    queryPassengerInterval() {
+      this.passTimer = setInterval(this.postPassenger, 600000)
+    },
+    postPassenger() {
       let that = this
-      // this.ajax({
-      //   name: 'queryPassenger',
-      //   data: {}
-      // }).then(res => {
-      //   // this.queryStandData.nearlyStand = res.nearlyStand
-      //   // this.queryStandData.farStand = res.farStand
-      //   // this.queryStandData.disableStand = res.disableStand
-
-      //   // charts   todo
-      //   let temp = that.passOption
-
-      //   temp.series[0].data = [res.data.checkinNum, res.data.VerifyNum, res.data.boardNum, res.data.isolationNum, res.data.isolationNum]
-      //   that.passChart.setOption(temp)
-      // })
-
-      // charts   todo
-      // new Date("2019-03-18 00:9:00").getTime() - 8.64e7
-      this.passTimer = setInterval(() => {
-        console.log(11)
-        this.passOption.series[0].data = []
-        this.passOption.series[0].data = [1000, 8, 600, 200, 1200]
-        this.passChart.setOption(this.passOption)
-        // this.queryPassData.statDate = new Date("2019-03-18 00:9:00").getTime() - 8.64e7
-        // this.queryPassData.statDate = new Date(res.headers.date)
-      }, 600000) // 十分钟刷新一次
+      that.ajax({
+        name: 'queryPassenger',
+        data: {}
+      }).then(res => {
+        // charts
+        let temp = that.passOption
+        that.passOption.series[0].data = []
+        temp.series[0].data = [res.checkinNum, res.verifyNum, res.boardNum, res.isolationNum, res.isolationNum]
+        that.passChart.setOption(temp)
+      })
     },
     // 机位使用情况
     queryStand() {
