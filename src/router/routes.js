@@ -30,11 +30,6 @@ const router = [
     component: () => import('@/views/axios')
   },
   {
-    name: 'stand',
-    path: '/stand',
-    component: () => import('@/views/stand')
-  },
-  {
     name: 'all',
     path: '/all',
     component: () => import('@/views/all'),
@@ -49,6 +44,16 @@ const router = [
         path: '/work',
         name: '值班信息',
         component: () => import('@/views/work')
+      },
+      {
+        path: '/stand',
+        name: '机位信息',
+        component: () => import('@/views/stand')
+      },
+      {
+        path: '/passenger',
+        name: '旅客信息',
+        component: () => import('@/views/passenger')
       }]
   },
   {

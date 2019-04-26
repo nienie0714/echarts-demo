@@ -1,7 +1,6 @@
 <template>
   <div class="page-tabbar">
     <div class="page-wrap">
-	    <!-- tabcontainer -->
       <div class="page-tabbar-container">
         <transition name="move" mode="out-in">
           <router-view></router-view>
@@ -10,8 +9,16 @@
     </div>
     <mt-tabbar v-model="selected" fixed>
       <mt-tab-item id="statistic">
+        <img slot="icon" src="../assets/flt.png">
+        航班信息
+      </mt-tab-item>
+      <mt-tab-item id="stand">
+        <img slot="icon" src="../assets/stand.png">
+        机位信息
+      </mt-tab-item>
+      <mt-tab-item id="passenger">
         <img slot="icon" src="../assets/statistic.png">
-        统计信息
+        旅客信息
       </mt-tab-item>
       <mt-tab-item id="work">
         <img slot="icon" src="../assets/work.png">
@@ -30,18 +37,24 @@ export default {
     }
   },
   created() {
-    let path = localStorage.getItem('path')
-    if (path == '/work') {
-      this.selected = 'work'
-      this.$router.push(path)
-    } else {
-      this.selected = 'statistic'
-      this.$router.push('/statistic')
-    }
+    // let path = localStorage.getItem('path')
+    // if (path == '/work') {
+    //   this.selected = 'work'
+    //   this.$router.push(path)
+    // } else if (path == '/passenger') {
+    //   this.selected = 'passenger'
+    //   this.$router.push(path)
+    // } else if (path == '/stand') {
+    //   this.selected = 'stand'
+    //   this.$router.push(path)
+    // } else {
+    //   this.selected = 'statistic'
+    //   this.$router.push('/statistic')
+    // }
   },
   watch: {
     selected(val) {
-      localStorage.setItem('path', '/' + val)
+      // localStorage.setItem('path', '/' + val)
       this.$router.push('/' + val)
     }
   }

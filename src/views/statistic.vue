@@ -97,7 +97,6 @@
       </div>
       <div class="pass-out-wrapper">
         <div class="pass-title">旅客实时情况</div>
-        <!-- &nbsp;&nbsp;&nbsp;{{queryPassData.statDate.substring(11)}} -->
         <div class="pass-wrapper">
           <div id="passChart" :style="{width: '330px', height: '200px', margin: '0 auto', marginTop: '-23px'}"></div>
         </div>
@@ -143,29 +142,40 @@
           </div>
         </div>
       </div>
+      <!-- 进出港速率 -->
+      <div class="flight-guarantee-wrapper mb70 hei450" :style="{'margin-bottom': '15px'}">
+        <div class="flight-title" :style="{'margin-bottom': '10px'}">本月放行正常率</div>
+        <div class="flex-table">
+          <div>昨日</div>
+          <div>80%</div>
+          <div class="split-line">|</div>
+          <div>今日</div>
+          <div>20%</div>
+          <div class="split-line">|</div>
+          <div>本月</div>
+          <div>98%</div>
+        </div>
+        <div class="bar-wrapper">
+          <div id="monthGreenChart" :style="{width: '330px', height: '200px', margin: '0 auto', marginTop: '-23px'}"></div>
+        </div>
+      </div>
       <!-- 机位使用情况 -->
-      <div class="flight-guarantee-wrapper mb70 hei320">
-        <div class="flight-title ">机位使用实况</div>
+      <!-- 进出港速率 -->
+      <div class="flight-guarantee-wrapper mb30 hei320">
+        <div class="flight-title" :style="{'margin-bottom': '0px'}">进出港速率</div>
         <div class="stand-flex-wrapper">
-          <div id="standChart" :style="{width: '200px', height: '150px'}"></div>
-          <div class="stand-flex-font">
-            <div class="flight-flex-item">
-              <div>近机位</div>
-              <div>{{queryStandData.nearlyStand}}</div>
-            </div>
-            <div class="flight-flex-item">
-              <div>远机位</div>
-              <div>{{queryStandData.farStand}}</div>
-            </div>
-            <div class="flight-flex-item">
-              <div>不可用</div>
-              <div class="fc-red">{{queryStandData.disableStand}}</div>
-            </div>
-          </div>
+          <div id="aRateChart" :style="{width: '200px', height: '150px'}"></div>
+          <div id="dRateChart" :style="{width: '200px', height: '150px'}"></div>
+        </div>
+      </div>
+      <!-- 靠桥率 -->
+      <div class="flight-guarantee-wrapper mb70 hei320">
+        <div class="flight-title" :style="{'margin-bottom': '0px'}">靠桥率</div>
+        <div class="bar-wrapper">
+          <div id="bridgeRateChart" :style="{width: '330px', height: '200px', margin: '0 auto', marginTop: '-35px'}"></div>
         </div>
       </div>
     </div>
-    
   </div>
 </template>
 
@@ -503,36 +513,222 @@ export default {
           }
         }]
       },
-      // 航班-----------------------------------------------------------
-      queryStandData: {
-        nearlyStand: '',
-        farStand: '',
-        disableStand: '',
-        totalCan: 0,
-        totalFree: 0
+      // 当月放行正常率-----------------------------------------------------------
+      monthGreenChart: '',
+      monthGreenOption: {
+        tooltip: {
+          trigger: 'axis',
+          formatter: "{b}日 <br/>{a}: {c}%",
+          axisPointer: {
+            type: 'line',
+            label: 'cross',
+            show: true
+          }
+        },
+        xAxis: [
+          {
+            type: 'category',
+            boundaryGap: true, // 类目起始和结束两端空白策略，默认为true留空，false则顶头
+            data : (function() {
+              let list = []
+              for (let i = 1; i < 27; i++) {
+                list.push(i)
+              }
+              return list
+            })(),
+            axisLabel: {
+              width: 5,
+              interval: 3,
+              margin: 10
+            }
+          }
+        ],
+        grid: {
+          left: '2%',
+          right: '2%',
+          bottom: '10%',
+          containLabel: true
+        },
+        yAxis: [
+          {
+            type: 'value',
+            name: '正常率',
+            nameTextStyle: {
+              align: 'left'
+            },
+            nameGap: 10
+          }
+        ],
+        series: [{
+          name: '正常率',
+          type: 'line',
+          data: []
+        }]
       },
-      standChart: '',
-      standOption: {
+      // 航班-----------------------------------------------------------
+      // queryStandData: {
+      //   nearlyStand: '',
+      //   farStand: '',
+      //   disableStand: '',
+      //   totalCan: 0,
+      //   totalFree: 0
+      // },
+      // standChart: '',
+      // standOption: {
+      //   tooltip: {
+      //     trigger: 'item',
+      //     formatter: "{a} <br/>{b}: {c} ({d}%)",
+      //     position: ['50%', '50%']
+      //   },
+      //   legend: {
+      //     orient: 'vertical',
+      //     left: 'lefft',
+      //     data: ['占用', '空闲'],
+      //     formatter: this.standFormatter
+      //   },
+      //   series: [{
+      //     name: '机位使用情况',
+      //     type: 'pie',// pie:饼图
+      //     radius: '45%',
+      //     center: ['50%', '50%'],
+      //     data: [
+      //       {value: 0, name: '占用'},
+      //       {value: 0, name: '空闲'}
+      //     ]
+      //   }]
+      // }
+      // 进出港速率-进----------------------------------------------------------
+      aRateChart: '',
+      aRateOption: {
+        title: {
+          text: '进港速率',
+          textAlign: 'auto',
+          padding: [10, 50],
+          textStyle: {
+            color: '#6e7074',
+            fontSize: 14
+          }
+        },
         tooltip: {
           trigger: 'item',
           formatter: "{a} <br/>{b}: {c} ({d}%)",
           position: ['50%', '50%']
         },
-        legend: {
-          orient: 'vertical',
-          left: 'lefft',
-          data: ['占用', '空闲'],
-          formatter: this.standFormatter
-        },
         series: [{
-          name: '机位使用情况',
+          name: '进港速率（15分钟/架）',
           type: 'pie',// pie:饼图
           radius: '45%',
           center: ['50%', '50%'],
+          label: {
+            show: true,
+            normal : {
+              position : "outside",
+              formatter: "{b}\n{c}"
+            }
+          },
+          labelLine : {
+            normal : {
+              length : 7,
+              length2 : 7
+            }
+          },
           data: [
-            {value: 0, name: '占用'},
-            {value: 0, name: '空闲'}
+            {value: 0, name: '起飞'},
+            {value: 0, name: '未起飞'}
           ]
+        }],
+        color: ['#61a0a8', '#bbd8dc']
+      },
+      // 进出港速率-出----------------------------------------------------------
+      dRateChart: '',
+      dRateOption: {
+        title: {
+          text: '出港速率',
+          textAlign: 'auto',
+          padding: [10, 50],
+          textStyle: {
+            color: '#6e7074',
+            fontSize: 14
+          }
+        },
+        tooltip: {
+          trigger: 'item',
+          formatter: "{a} <br/>{b}: {c} ({d}%)",
+          position: ['50%', '50%']
+        },
+        series: [{
+          name: '出港速率（15分钟/架）',
+          type: 'pie',// pie:饼图
+          radius: '45%',
+          center: ['50%', '50%'],
+          label: {
+            show: true,
+            normal : {
+              position : "outside",
+              formatter: "{b}\n{c}"
+            }
+          },
+          labelLine : {
+            normal : {
+              length : 7,
+              length2 : 7
+            }
+          },
+          data: [
+            {value: 0, name: '降落'},
+            {value: 0, name: '未降落'}
+          ]
+        }],
+        color: ['#d48265', '#e5c2b6']
+      },
+      // 靠桥率-----------------------------------------------------------
+      bridgeRateChart: '',
+      bridgeRateOption: {
+        tooltip: {
+          trigger: 'axis'
+        },
+        xAxis: [
+          {
+            type: 'value'
+          }
+        ],
+        grid: {
+          left: '6%',
+          containLabel: true
+        },
+        yAxis: [
+          {
+            type: 'category',
+            data: ['航班靠桥率', '旅客靠桥率']
+          }
+        ],
+        series: [{
+          name: '靠桥率',
+          type: 'bar',
+          data: [98, 66],
+          label: {
+            normal: {
+              show: true,
+              position: 'inside',
+              color: '#027fcf',
+              fontWeight: 'bold',
+              fontSize: 14,
+              formatter: "{c}%"
+            }
+          },
+          itemStyle: {
+            normal: {
+              color: function(params) {
+                var colorList = ['#f6d36c', '#92afe6']
+                return colorList[params.dataIndex]
+              },
+              emphasis: {
+                shadowBlur: 10,
+                shadowOffsetX: 0,
+                shadowColor: 'rgba(0, 0, 0, 0.5)'
+              }
+            }
+          }
         }]
       }
     }
@@ -551,20 +747,37 @@ export default {
     this.fltDChartDb = this.$echarts.init(document.getElementById('fltDChartDb'))
     this.fltDChartDb.setOption(this.fltDDbOption)
     // 机位
-    this.standChart = this.$echarts.init(document.getElementById('standChart'))
-    this.standChart.setOption(this.standOption)
+    // this.standChart = this.$echarts.init(document.getElementById('standChart'))
+    // this.standChart.setOption(this.standOption)
 
     // 旅客
     this.passChart = this.$echarts.init(document.getElementById('passChart'))
     this.passChart.setOption(this.passOption)
+
+    // 进出港速率
+    this.aRateChart = this.$echarts.init(document.getElementById('aRateChart'))
+    this.aRateChart.setOption(this.aRateOption)
+    this.dRateChart = this.$echarts.init(document.getElementById('dRateChart'))
+    this.dRateChart.setOption(this.dRateOption)
+
+    // 本月放行正常率
+    this.monthGreenChart = this.$echarts.init(document.getElementById('monthGreenChart'))
+    this.monthGreenChart.setOption(this.monthGreenOption)
+
+    // 靠桥率
+    this.bridgeRateChart = this.$echarts.init(document.getElementById('bridgeRateChart'))
+    this.bridgeRateChart.setOption(this.bridgeRateOption)
   },
   created() {
     this.queryFlightA()
     this.queryFlightD()
     this.queryFlight()
-    this.queryStand()
+    // this.queryStand()
     clearInterval(this.passTimer)
     this.queryPassenger()
+    this.queryRate()
+    this.queryMonthGreen()
+    this.queryBridgeRate()
   },
   distroyed() {
     clearInterval(this.passTimer)
@@ -754,6 +967,29 @@ export default {
         that.passChart.setOption(temp)
       })
     },
+    // 本月航班放行正常率
+    queryMonthGreen() {
+      let that = this
+      setTimeout(() => {
+        let temp1 = that.monthGreenOption
+        temp1.series[0].data = []
+        for(let i = 1; i < 27; i++) {
+          let num = Math.ceil(Math.random()*20 + 80)
+          temp1.series[0].data.push(num)
+        }
+        that.monthGreenChart.setOption(temp1)
+      }, 100)
+      setTimeout(() => {
+        that.monthGreenChart.dispatchAction({
+          type: 'showTip',
+          seriesIndex:0,  // 显示第几个series
+          dataIndex: new Date().getDate()-1 // 显示第几个数据
+        })
+      }, 200)
+    },
+    queryBridgeRate() {
+      let that = this
+    },
     // 机位使用情况
     queryStand() {
       let that = this
@@ -785,6 +1021,18 @@ export default {
         }
       })
       return name + "  " + clientcounts[index]
+    },
+    queryRate() {
+      let that = this
+      setTimeout(() => {
+        let temp1 = that.aRateOption
+        temp1.series[0].data = [{value: 20, name: '起飞'}, { value: 15, name: '未起飞'}]
+        that.aRateChart.setOption(temp1)
+
+        let temp2 = that.dRateOption
+        temp2.series[0].data = [{value: 12, name: '降落'}, { value: 19, name: '未降落'}]
+        that.dRateChart.setOption(temp2)
+      }, 100)
     }
   }
 }
@@ -839,6 +1087,45 @@ export default {
     color: #8fa3cc;
     font-size: 14px;/*no*/
     margin-bottom: 32px;
+  }
+  .flex-table {
+    display: flex;
+    align-items: center;
+    div:nth-of-type(1) {
+      text-align: right;
+      font-size: 14px;/*no*/
+      margin-right: 25px;
+      width: 18%;
+      color: #4c6699;
+    }
+    div:nth-of-type(2) {
+      width: 10%;
+      color: #1f3666;
+      font-size: 16px;/*no*/
+    }
+    .split-line {
+      margin: 0 20px;
+    }
+    div:nth-of-type(4) {
+      font-size: 14px;/*no*/
+      width: 12%;
+      color: #4c6699;
+    }
+    div:nth-of-type(5) {
+      width: 13%;
+      color: #1f3666;
+      font-size: 16px;/*no*/
+    }
+    div:nth-of-type(7) {
+      font-size: 14px;/*no*/
+      width: 10%;
+      color: #4c6699;
+    }
+    div:nth-of-type(8) {
+      width: 20%;
+      color: #1f3666;
+      font-size: 16px;/*no*/
+    }
   }
   .flight-flex-wrapper {
     display: flex;
@@ -911,8 +1198,18 @@ export default {
 .mb70 {
   margin-bottom: 70px;
 }
+.mb30 {
+  margin-bottom: 30px;
+}
 .hei320 {
-  height: 370px;
+  height: 320px;
+}
+.hei450 {
+  height: 450px;
+}
+.bar-wrapper {
+  display: flex;
+  justify-content: space-between;
 }
 .stand-flex-wrapper {
   display: flex;
