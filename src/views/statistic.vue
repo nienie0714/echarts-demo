@@ -1,8 +1,8 @@
 <template>
   <div class="render pt">
-    <v-header title="数据分析" back></v-header>
-    <div class="content">
-       <mt-navbar v-model="selected">
+    <v-header title="数据分析"></v-header>
+    <div class="content" style="overflow: hidden;">
+      <mt-navbar v-model="selected">
         <mt-tab-item id="1">进港统计</mt-tab-item>
         <mt-tab-item id="2">出港统计</mt-tab-item>
       </mt-navbar>
@@ -93,12 +93,6 @@
             <div class="fc-blue">{{fltGuarantee.completionRate}}%</div>
             <div>完成率</div>
           </div>
-        </div>
-      </div>
-      <div class="pass-out-wrapper">
-        <div class="pass-title">旅客实时情况</div>
-        <div class="pass-wrapper">
-          <div id="passChart" :style="{width: '330px', height: '200px', margin: '0 auto', marginTop: '-23px'}"></div>
         </div>
       </div>
       <div class="flight-out-wrapper">
@@ -429,90 +423,6 @@ export default {
         "completionRate": 0
       },
       // 旅客-----------------------------------------------------------
-      passTimer: null,
-      queryPassData: {
-        "statDate": '',
-        "checkinNum": 0,
-        "verifyNum": 0,
-        "boardNum": 0,
-        "isolationNum": 0,
-        "plannedTotalNum": 0
-      },
-      passChart: '',
-      passOption: {
-        tooltip: {
-          trigger: 'axis'
-        },
-        toolbox: {
-          show: true,
-          feature: {
-              myTool1: {
-                  show: true,
-                  title: '刷新',
-                  icon: 'M3.8,33.4 M47,18.9h9.8V8.7 M56.3,20.1 C52.1,9,40.5,0.6,26.8,2.1C12.6,3.7,1.6,16.2,2.1,30.6 M13,41.1H3.1v10.2 M3.7,39.9c4.2,11.1,15.8,19.5,29.5,18 c14.2-1.6,25.2-14.1,24.7-28.5',
-                  iconStyle: {
-                    textPosition: 'top'
-                  },
-                  onclick: this.postPassenger
-              }
-          }
-        },
-        xAxis: [
-          {
-            type: 'category',
-            boundaryGap: true, // 类目起始和结束两端空白策略，默认为true留空，false则顶头
-            data : ['已值机', '已安检', '已登机', '隔离区', '计划出港'],
-            axisLabel: {
-              width: 20,
-              interval: 0,
-              rotate: 30,
-              margin: 10
-            }
-          }
-        ],
-        grid: {
-          left: '2%',
-          right: '2%',
-          bottom: '10%',
-          containLabel: true
-        },
-        yAxis: [
-          {
-            type: 'value',
-            name: '旅客数',
-            nameTextStyle: {
-              align: 'left'
-            },
-            nameGap: 20
-          }
-        ],
-        series: [{
-          name: '旅客数',
-          type: 'bar',
-          data: [1000, 8, 600, 200, 1000],
-          label: {
-            normal: {
-              show: true,
-              position: 'top',
-              color: '#027fcf',
-              fontWeight: 'bold',
-              fontSize: 14
-            }
-          },
-          itemStyle:{
-            normal:{
-              color:function(params) {
-                if(params.value > 0 && params.value < 500) {
-                  return "#FE8463"
-                } else if (params.value >=500 && params.value<=900) {
-                  return "#27727B"
-                }
-                return "#9BCA63"
-              }
-            }
-          }
-        }]
-      },
       // 当月放行正常率-----------------------------------------------------------
       monthGreenChart: '',
       monthGreenOption: {
@@ -746,13 +656,6 @@ export default {
 
     this.fltDChartDb = this.$echarts.init(document.getElementById('fltDChartDb'))
     this.fltDChartDb.setOption(this.fltDDbOption)
-    // 机位
-    // this.standChart = this.$echarts.init(document.getElementById('standChart'))
-    // this.standChart.setOption(this.standOption)
-
-    // 旅客
-    this.passChart = this.$echarts.init(document.getElementById('passChart'))
-    this.passChart.setOption(this.passOption)
 
     // 进出港速率
     this.aRateChart = this.$echarts.init(document.getElementById('aRateChart'))
@@ -772,15 +675,9 @@ export default {
     this.queryFlightA()
     this.queryFlightD()
     this.queryFlight()
-    // this.queryStand()
-    clearInterval(this.passTimer)
-    this.queryPassenger()
     this.queryRate()
     this.queryMonthGreen()
     this.queryBridgeRate()
-  },
-  distroyed() {
-    clearInterval(this.passTimer)
   },
   methods: {
     ...mapActions(['ajax']),
@@ -947,26 +844,6 @@ export default {
       })
     },
     // 旅客
-    queryPassenger() {
-      this.postPassenger()
-      this.queryPassengerInterval()
-    },
-    queryPassengerInterval() {
-      this.passTimer = setInterval(this.postPassenger, 600000)
-    },
-    postPassenger() {
-      let that = this
-      that.ajax({
-        name: 'queryPassenger',
-        data: {}
-      }).then(res => {
-        // charts
-        let temp = that.passOption
-        that.passOption.series[0].data = []
-        temp.series[0].data = [res.checkinNum, res.verifyNum, res.boardNum, res.isolationNum, res.isolationNum]
-        that.passChart.setOption(temp)
-      })
-    },
     // 本月航班放行正常率
     queryMonthGreen() {
       let that = this

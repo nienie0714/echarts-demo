@@ -1,6 +1,6 @@
 <template>
   <div class="render pt">
-    <v-header title="旅客信息" back></v-header>
+    <v-header title="旅客信息"></v-header>
     <div class="content">
       <div class="pass-out-wrapper">
         <div class="pass-title">旅客实时情况</div>
@@ -78,7 +78,7 @@ export default {
         series: [{
           name: '旅客数',
           type: 'bar',
-          data: [1000, 8, 600, 200, 1000],
+          data: [0, 0, 0, 0, 0],
           label: {
             normal: {
               show: true,
@@ -135,8 +135,7 @@ export default {
         // charts
         let temp = that.passOption
         that.passOption.series[0].data = []
-        // temp.series[0].data = [res.checkinNum, res.verifyNum, res.boardNum, res.isolationNum, res.isolationNum]
-        temp.series[0].data = [1000, 800, 15000, 200, 10000]
+        temp.series[0].data = [res.checkinNum, res.verifyNum, res.boardNum, res.isolationNum, res.isolationNum]
         that.passChart.setOption(temp)
       })
     }
@@ -145,7 +144,8 @@ export default {
 </script>
 <style lang="less" scoped>
 .pass-out-wrapper {
-  height: 580px;
+  height: 600px;
+  overflow: hidden;
   background-color: #fff;
   margin: 15px 30px 50px 30px;
   padding: 14px 16px; 
