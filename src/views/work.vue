@@ -37,6 +37,7 @@
   </div>
 </template>
 <script>
+import { mapActions } from 'vuex'
 export default {
   data() {
     return {
@@ -108,6 +109,16 @@ export default {
           value: 'MMMM'
         }
       ]
+    }
+  },
+  methods: {
+    ...mapActions(['ajax']),
+    queryFlightA() {
+      let that = this
+      this.ajax({
+        name: 'queryDuty'
+      }).then(res => {
+      })
     }
   }
 }
