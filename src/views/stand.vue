@@ -47,6 +47,16 @@ export default {
         totalCan: 0,
         totalFree: 0
       },
+      queryOtherStandData: {
+        Lused: 0,
+        Lfree: 0,
+        Yused: 0,
+        Yfree: 0,
+        Hused: 0,
+        Hfree: 0,
+        Cused: 0,
+        Cfree: 0
+      },
       standChart: '',
       standOption: {
         tooltip: {
@@ -298,24 +308,43 @@ export default {
       return name + "  " + clientcounts[index]
     },
     showData() {
-      setTimeout(this.queryData, 100)
+      setTimeout(this.queryOtherStand, 100)
+    },
+    queryOtherStand() {
+      let that = this
+      this.ajax({
+        name: 'queryOtherStand',
+        data: {}
+      }).then(res => {
+        this.queryOtherStandData.Lused = res.nData.L.usedNum
+        this.queryOtherStandData.Lfree = res.nData.L.freeNum
+        this.queryOtherStandData.Yused = res.nData.Y.usedNum
+        this.queryOtherStandData.Yfree = res.nData.Y.freeNum
+        this.queryOtherStandData.Hused = res.nData.H.usedNum
+        this.queryOtherStandData.Hfree = res.nData.H.freeNum
+        this.queryOtherStandData.Iused = res.nData.I.usedNum
+        this.queryOtherStandData.Ifree = res.nData.I.freeNum
+
+        // charts
+        this.queryData()
+      })
     },
     queryData() {
       // charts
       let temp1 = this.galleryOption
-      temp1.series[0].data = [{value: 8, name: '占用'}, { value: 6, name: '空闲'}]
+      temp1.series[0].data = [{value: this.queryOtherStandData.Lused, name: '占用'}, { value: this.queryOtherStandData.Lfree, name: '空闲'}]
       this.galleryChart.setOption(temp1)
 
       let temp2 = this.farOption
-      temp2.series[0].data = [{value: 9, name: '占用'}, { value: 5, name: '空闲'}]
+      temp2.series[0].data = [{value: this.queryOtherStandData.Yused, name: '占用'}, { value: this.queryOtherStandData.Yfree, name: '空闲'}]
       this.farChart.setOption(temp2)
 
       let temp3 = this.iceOption
-      temp3.series[0].data = [{value: 7, name: '占用'}, { value: 4, name: '空闲'}]
+      temp3.series[0].data = [{value: this.queryOtherStandData.Iused, name: '占用'}, { value: this.queryOtherStandData.Ifree, name: '空闲'}]
       this.iceChart.setOption(temp3)
 
       let temp4 = this.cargoOption
-      temp4.series[0].data = [{value: 3, name: '占用'}, { value: 5, name: '空闲'}]
+      temp4.series[0].data = [{value: this.queryOtherStandData.Hused, name: '占用'}, { value: this.queryOtherStandData.Hfree, name: '空闲'}]
       this.cargoChart.setOption(temp4)
     }
   }

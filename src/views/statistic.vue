@@ -1,6 +1,6 @@
 <template>
   <div class="render pt">
-    <v-header title="数据分析"></v-header>
+    <v-header title="数据分析" back></v-header>
     <div class="content" style="overflow: hidden;">
       <mt-navbar v-model="selected">
         <mt-tab-item id="1">进港统计</mt-tab-item>
@@ -136,30 +136,32 @@
           </div>
         </div>
       </div>
-      <!-- 进出港速率 -->
+      <!-- 当日放行正常率 -->
       <div class="flight-guarantee-wrapper mb70 hei450" :style="{'margin-bottom': '15px'}">
-        <div class="flight-title" :style="{'margin-bottom': '10px'}">本月放行正常率</div>
+        <div class="flight-title" :style="{'margin-bottom': '10px'}">当日放行正常率</div>
         <div class="flex-table">
           <div>昨日</div>
-          <div>80%</div>
+          <div>{{queryGreen.yRate}}%</div>
           <div class="split-line">|</div>
           <div>今日</div>
-          <div>20%</div>
+          <div>{{queryGreen.tRate}}%</div>
           <div class="split-line">|</div>
           <div>本月</div>
-          <div>98%</div>
+          <div>{{queryGreen.mRate}}%</div>
         </div>
         <div class="bar-wrapper">
-          <div id="monthGreenChart" :style="{width: '330px', height: '200px', margin: '0 auto', marginTop: '-23px'}"></div>
+          <!-- <div id="monthGreenChart" :style="{width: '330px', height: '200px', margin: '0 auto', marginTop: '-23px'}"></div> -->
+          <div id="greenRate" :style="{width: '330px', height: '200px', margin: '0 auto', marginTop: '-2px'}"></div>
         </div>
       </div>
       <!-- 机位使用情况 -->
       <!-- 进出港速率 -->
-      <div class="flight-guarantee-wrapper mb30 hei320">
+      <div class="flight-guarantee-wrapper mb30 hei600">
         <div class="flight-title" :style="{'margin-bottom': '0px'}">进出港速率</div>
         <div class="stand-flex-wrapper">
-          <div id="aRateChart" :style="{width: '200px', height: '150px'}"></div>
-          <div id="dRateChart" :style="{width: '200px', height: '150px'}"></div>
+          <!-- <div id="aRateChart" :style="{width: '200px', height: '150px'}"></div>
+          <div id="dRateChart" :style="{width: '200px', height: '150px'}"></div> -->
+          <div id="lineZoom"  :style="{width: '330px', height: '300px', margin: '0 auto', marginTop: '-27px'}"></div>
         </div>
       </div>
       <!-- 靠桥率 -->
@@ -187,7 +189,7 @@ export default {
         "execFlight": 0,//已执行
         "dlyFlight": 0,//当前延误////
         "canFlight": 0,//已取消
-        "noExecFligth": 0,//未执行
+        "noExecFlight": 0,//未执行
         "normalExecFlight": 0,//正常执行
         "execDlyFlight": 0,//延误进港
         "currCompletionRate": 0,//当前完成率
@@ -312,7 +314,7 @@ export default {
         "execFlight": 0,//已执行
         "dlyFlight": 0,//当前延误
         "canFlight": 0,//已取消
-        "noExecFligth": 0,//未执行
+        "noExecFlight": 0,//未执行
         "normalExecFlight": 0,//正常执行
         "execDlyFlight": 0,//延误进港
         "currCompletionRate": 0,//当前完成率
@@ -475,121 +477,199 @@ export default {
           data: []
         }]
       },
-      // 航班-----------------------------------------------------------
-      // queryStandData: {
-      //   nearlyStand: '',
-      //   farStand: '',
-      //   disableStand: '',
-      //   totalCan: 0,
-      //   totalFree: 0
-      // },
-      // standChart: '',
-      // standOption: {
-      //   tooltip: {
-      //     trigger: 'item',
-      //     formatter: "{a} <br/>{b}: {c} ({d}%)",
-      //     position: ['50%', '50%']
-      //   },
-      //   legend: {
-      //     orient: 'vertical',
-      //     left: 'lefft',
-      //     data: ['占用', '空闲'],
-      //     formatter: this.standFormatter
-      //   },
-      //   series: [{
-      //     name: '机位使用情况',
-      //     type: 'pie',// pie:饼图
-      //     radius: '45%',
-      //     center: ['50%', '50%'],
-      //     data: [
-      //       {value: 0, name: '占用'},
-      //       {value: 0, name: '空闲'}
-      //     ]
-      //   }]
-      // }
-      // 进出港速率-进----------------------------------------------------------
-      aRateChart: '',
-      aRateOption: {
-        title: {
-          text: '进港速率',
-          textAlign: 'auto',
-          padding: [10, 50],
-          textStyle: {
-            color: '#6e7074',
-            fontSize: 14
-          }
-        },
-        tooltip: {
-          trigger: 'item',
-          formatter: "{a} <br/>{b}: {c} ({d}%)",
-          position: ['50%', '50%']
-        },
-        series: [{
-          name: '进港速率（15分钟/架）',
-          type: 'pie',// pie:饼图
-          radius: '45%',
-          center: ['50%', '50%'],
-          label: {
-            show: true,
-            normal : {
-              position : "outside",
-              formatter: "{b}\n{c}"
-            }
-          },
-          labelLine : {
-            normal : {
-              length : 7,
-              length2 : 7
-            }
-          },
-          data: [
-            {value: 0, name: '起飞'},
-            {value: 0, name: '未起飞'}
-          ]
-        }],
-        color: ['#61a0a8', '#bbd8dc']
+      // 当日放行正常率-----------------------------------------------------------
+      queryGreen: {
+        'tdayRlsFlight': 0, // 当日正常放行航班
+        'tdayTotalRlsFlight': 0, // 当日总航班
+        'ydayRlsFlight': 0, // 昨日正常放行航班
+        'ydayTotalRlsFlight': 0, // 昨日总航班
+        'tmonRlsFlight': 0, // 当月正常放行航班
+        'tmonTotalRlsFlight': 0, // 当月总航班
+        'bridgedFlight': 0, // 已靠桥航班
+        'enableBridgeFlight': 0, // 可以靠桥航班(总数)
+        'bridgedPassenger': 0, // 已靠桥旅客
+        'enableBridgePassenger': 0 // 可以靠桥的旅客(总数)
       },
-      // 进出港速率-出----------------------------------------------------------
-      dRateChart: '',
-      dRateOption: {
-        title: {
-          text: '出港速率',
-          textAlign: 'auto',
-          padding: [10, 50],
-          textStyle: {
-            color: '#6e7074',
-            fontSize: 14
+      greenRate: '',
+      greenRateOption: {
+        series: [
+          {
+              name: '业务指标',
+              type: 'gauge',
+              radius: '90%',
+              startAngle: 210,
+              endAngle: -30,
+              axisLine: {
+                  show: false,
+                  lineStyle: {
+                      width: 12
+                  }
+              },
+              axisLabel: {
+                show: true,
+                distance: 5 // 标签与刻度线的距离,默认 5。
+                // color: '#7a939e'
+              },
+              splitLine: {
+                  show: true,
+                  length: 13
+              },
+              detail: {formatter:'{value}%', fontSize: 17},
+              data: [{value: 0, name: '当日'}]
           }
+        ]
+      },
+      // 进出港速率-进----------------------------------------------------------
+      queryRateData: {
+        in: [],
+        time: [],
+        out: []
+      },
+      lineZoom: '',
+      lineOptions: {
+        legend: {
+          align: 'auto',
+          top: '10%',
+          inactiveColor: 'rgba(122, 147, 158, 0.6)',
+          itemGap: 20,
+          textStyle: {
+            color: '#7a939e',
+            fontFamily: `'Helvetica Neue', Helvetica, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 微软雅黑, Arial, sans-serif`
+          },
+          data: ['出港', '进港']
         },
         tooltip: {
-          trigger: 'item',
-          formatter: "{a} <br/>{b}: {c} ({d}%)",
-          position: ['50%', '50%']
+          show: true,
+          trigger: 'axis'
         },
-        series: [{
-          name: '出港速率（15分钟/架）',
-          type: 'pie',// pie:饼图
-          radius: '45%',
-          center: ['50%', '50%'],
-          label: {
-            show: true,
-            normal : {
-              position : "outside",
-              formatter: "{b}\n{c}"
+        xAxis: {
+          boundaryGap: true,
+          axisLine: {
+            lineStyle: {
+              color: 'rgba(60, 166, 200, 0.3)'
             }
           },
-          labelLine : {
-            normal : {
-              length : 7,
-              length2 : 7
+          axisTick: {
+            show: false
+          },
+          axisLabel: {
+            margin: 15,
+            color: '#000',
+            fontSize: 0, // this.fontSizeRs,
+            fontFamily: `'Helvetica Neue', Helvetica, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 微软雅黑, Arial, sans-serif`
+          },
+          data: []
+        },
+        yAxis: {
+          min: 'dataMin',
+          max: 'dataMax',
+          minInterval: 1,
+          splitLine: {
+            lineStyle: {
+              color: 'rgba(60, 166, 200, 0.3)'
             }
           },
-          data: [
-            {value: 0, name: '降落'},
-            {value: 0, name: '未降落'}
-          ]
+          axisLine: {
+            show: false
+          },
+          axisTick: {
+            show: false
+          },
+          axisLabel: {
+            margin: 15,
+            color: '#7a939e',
+            fontSize: 0, // this.fontSizeRs,
+            fontFamily: `'Helvetica Neue', Helvetica, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 微软雅黑, Arial, sans-serif`
+          }
+        },
+        dataZoom: [{
+          type: 'inside',
+          filterMode: 'none',
+          startValue: 0,
+          end: 200
         }],
-        color: ['#d48265', '#e5c2b6']
+        grid: {
+          left: '2%',
+          right: '2%',
+          bottom: '5%',
+          containLabel: true
+        },
+        series: [
+          {
+            name: '出港',
+            type: 'line',
+            // data: [120, 132, 101, 134, 90, 230, 210]
+            symbol: 'circle',
+            symbolSize: 8,
+            smooth: true,
+            connectNulls: true,
+            itemStyle: {
+              normal: {
+                color: 'rgb(3, 167, 134)',
+                borderColor: '#071622',
+                borderWidth: 2
+              }
+            },
+            lineStyle: {
+              opacity: 0
+            },
+            areaStyle: {
+              normal: {
+                color: {
+                  type: 'linear',
+                  x: 0,
+                  y: 0,
+                  x2: 0,
+                  y2: 1,
+                  colorStops: [{
+                    offset: 0, color: 'rgba(3, 167, 134, 1)'
+                  }, {
+                    offset: 0.5, color: 'rgba(3, 167, 134, 0.8)'
+                  }, {
+                    offset: 1, color: 'rgba(3, 167, 134, 0.4)'
+                  }]
+                }
+              }
+            },
+            data: []
+          },
+          {
+            name: '进港',
+            type: 'line',
+            symbol: 'circle',
+            symbolSize: 8,
+            smooth: true,
+            itemStyle: {
+              normal: {
+                color: 'rgb(212, 129, 127)',
+                borderColor: '#071622',
+                borderWidth: 2
+              }
+            },
+            lineStyle: {
+              opacity: 0
+            },
+            areaStyle: {
+              normal: {
+                color: {
+                  type: 'linear',
+                  x: 0,
+                  y: 0,
+                  x2: 0,
+                  y2: 1,
+                  colorStops: [{
+                    offset: 0, color: 'rgba(212, 129, 127, 1)'
+                  }, {
+                    offset: 0.5, color: 'rgba(212, 129, 127, 0.8)'
+                  }, {
+                    offset: 1, color: 'rgba(212, 129, 127, 0.4)'
+                  }]
+                }
+              }
+            },
+            data: []
+          }
+        ]
       },
       // 靠桥率-----------------------------------------------------------
       bridgeRateChart: '',
@@ -615,7 +695,7 @@ export default {
         series: [{
           name: '靠桥率',
           type: 'bar',
-          data: [98, 66],
+          data: [0, 0],
           label: {
             normal: {
               show: true,
@@ -658,14 +738,14 @@ export default {
     this.fltDChartDb.setOption(this.fltDDbOption)
 
     // 进出港速率
-    this.aRateChart = this.$echarts.init(document.getElementById('aRateChart'))
-    this.aRateChart.setOption(this.aRateOption)
-    this.dRateChart = this.$echarts.init(document.getElementById('dRateChart'))
-    this.dRateChart.setOption(this.dRateOption)
+    this.lineZoom = this.$echarts.init(document.getElementById('lineZoom'))
+    this.lineZoom.setOption(this.lineOptions)
 
     // 本月放行正常率
-    this.monthGreenChart = this.$echarts.init(document.getElementById('monthGreenChart'))
-    this.monthGreenChart.setOption(this.monthGreenOption)
+    // this.monthGreenChart = this.$echarts.init(document.getElementById('monthGreenChart'))
+    // this.monthGreenChart.setOption(this.monthGreenOption)
+    this.greenRate = this.$echarts.init(document.getElementById('greenRate'))
+    this.greenRate.setOption(this.greenRateOption)
 
     // 靠桥率
     this.bridgeRateChart = this.$echarts.init(document.getElementById('bridgeRateChart'))
@@ -676,7 +756,8 @@ export default {
     this.queryFlightD()
     this.queryFlight()
     this.queryRate()
-    this.queryMonthGreen()
+    // this.queryMonthGreen()
+    this.queryToGreen()
     this.queryBridgeRate()
   },
   methods: {
@@ -707,14 +788,14 @@ export default {
         // 当日取消
         this.queryFltA.canFlight = res.canFlight
         // 未执行
-        this.queryFltA.noExecFligth = res.noExecFligth
+        this.queryFltA.noExecFlight = res.noExecFlight
 
         // 进港统计 Chart
         temp.series[0].data = [
           { value: this.queryFltA.normalExecFlight, name: '正常进港'},
           { value: this.queryFltA.execDlyFlight, name: '延误进港'},
           { value: this.queryFltA.canFlight, name: '当日取消'},
-          { value: this.queryFltA.noExecFligth, name: '未执行'}
+          { value: this.queryFltA.noExecFlight, name: '未执行'}
           ]
         that.fltAChart.setOption(temp)
 
@@ -753,7 +834,7 @@ export default {
     fltAFormatter(name) {
       let index = 0
       let clientlabels = ['正常进港', '延误进港', '当日取消', '未执行']
-      let clientcounts = [this.queryFltA.normalExecFlight, this.queryFltA.execDlyFlight, this.queryFltA.canFlight, this.queryFltA.noExecFligth]
+      let clientcounts = [this.queryFltA.normalExecFlight, this.queryFltA.execDlyFlight, this.queryFltA.canFlight, this.queryFltA.noExecFlight]
       clientlabels.forEach(function(value,i) {
         if(value == name) {
             index = i
@@ -786,12 +867,12 @@ export default {
         // 当日取消
         this.queryFltD.canFlight = res.canFlight
         // 未执行
-        this.queryFltD.noExecFligth = res.noExecFligth
+        this.queryFltD.noExecFlight = res.noExecFlight
         temp.series[0].data = [
           { value: this.queryFltD.normalExecFlight, name: '正常出港'},
           { value: this.queryFltD.execDlyFlight, name: '延误出港'},
           { value: this.queryFltD.canFlight, name: '当日取消'},
-          { value: this.queryFltD.noExecFligth, name: '未执行'}
+          { value: this.queryFltD.noExecFlight, name: '未执行'}
           ]
         that.fltDChart.setOption(temp)
 
@@ -823,7 +904,7 @@ export default {
     fltDFormatter(name) {
       let index = 0
       let clientlabels = ['正常出港', '延误出港', '当日取消', '未执行']
-      let clientcounts = [this.queryFltD.normalExecFlight, this.queryFltD.execDlyFlight, this.queryFltD.canFlight, this.queryFltD.noExecFligth]
+      let clientcounts = [this.queryFltD.normalExecFlight, this.queryFltD.execDlyFlight, this.queryFltD.canFlight, this.queryFltD.noExecFlight]
       clientlabels.forEach(function(value,i) {
         if(value == name) {
             index = i
@@ -864,6 +945,51 @@ export default {
         })
       }, 200)
     },
+    queryToGreen() {
+      let that = this
+      this.ajax({
+        name: 'queryGreen'
+      }).then(res => {
+        that.queryGreen = typeof (res[0]) != 'undefined' ? Object.assign(res[0]) : {}
+        if (Number.isInteger(that.queryGreen.tdayRlsFlight) && Number.isInteger(that.queryGreen.tdayTotalRlsFlight)) {
+          that.queryGreen.tRate = (that.queryGreen.tdayRlsFlight / that.queryGreen.tdayTotalRlsFlight * 100).toFixed(2)
+        } else {
+          that.queryGreen.tRate = 0
+        }
+        if (Number.isInteger(that.queryGreen.ydayRlsFlight) && Number.isInteger(that.queryGreen.ydayTotalRlsFlight)) {
+          that.queryGreen.yRate = (that.queryGreen.ydayRlsFlight / that.queryGreen.ydayTotalRlsFlight * 100).toFixed(2)
+        } else {
+          that.queryGreen.yRate = '--'
+        }
+        if (Number.isInteger(that.queryGreen.tmonRlsFlight) && Number.isInteger(that.queryGreen.tmonTotalRlsFlight)) {
+          that.queryGreen.mRate = (that.queryGreen.tmonRlsFlight / that.queryGreen.tmonTotalRlsFlight * 100).toFixed(2)
+        } else {
+          that.queryGreen.mRate = '--'
+        }
+        if (Number.isInteger(that.queryGreen.bridgedFlight) && Number.isInteger(that.queryGreen.enableBridgeFlight)) {
+          that.queryGreen.fltRate = (that.queryGreen.bridgedFlight / that.queryGreen.enableBridgeFlight * 100).toFixed(2)
+        } else {
+          that.queryGreen.fltRate = 0
+        }
+        if (Number.isInteger(that.queryGreen.bridgedPassenger) && Number.isInteger(that.queryGreen.enableBridgePassenger)) {
+          that.queryGreen.pasRate = (that.queryGreen.bridgedPassenger / that.queryGreen.enableBridgePassenger * 100).toFixed(2)
+        } else {
+          that.queryGreen.pasRate = 0
+        }
+
+        let temp = that.greenRateOption
+        temp.series[0].data = [
+          {value: that.queryGreen.tRate}
+        ]
+        that.greenRate.setOption(temp)
+
+        let temp2 = that.bridgeRateOption
+        temp2.series[0].data = [
+          that.queryGreen.fltRate,  that.queryGreen.pasRate
+        ]
+        that.bridgeRateChart.setOption(temp2)
+      })
+    },
     queryBridgeRate() {
       let that = this
     },
@@ -901,15 +1027,20 @@ export default {
     },
     queryRate() {
       let that = this
-      setTimeout(() => {
-        let temp1 = that.aRateOption
-        temp1.series[0].data = [{value: 20, name: '起飞'}, { value: 15, name: '未起飞'}]
-        that.aRateChart.setOption(temp1)
+      this.ajax({
+        name: 'queryRate',
+        data: {}
+      }).then(res => {
+        console.log(res)
+        that.queryRate.in = res.perFlight.in || []
+        that.queryRate.time = res.perFlight.time || []
+        that.queryRate.out = res.perFlight.out || []
 
-        let temp2 = that.dRateOption
-        temp2.series[0].data = [{value: 12, name: '降落'}, { value: 19, name: '未降落'}]
-        that.dRateChart.setOption(temp2)
-      }, 100)
+        that.lineOptions.xAxis.data = that.queryRate.time
+        that.lineOptions.series[0].data = that.queryRate.out
+        that.lineOptions.series[1].data = that.queryRate.in
+        that.lineZoom.setOption(that.lineOptions, true)
+      })
     }
   }
 }
@@ -972,11 +1103,11 @@ export default {
       text-align: right;
       font-size: 14px;/*no*/
       margin-right: 25px;
-      width: 18%;
+      width: 10%;
       color: #4c6699;
     }
     div:nth-of-type(2) {
-      width: 10%;
+      width: 15%;
       color: #1f3666;
       font-size: 16px;/*no*/
     }
@@ -989,7 +1120,7 @@ export default {
       color: #4c6699;
     }
     div:nth-of-type(5) {
-      width: 13%;
+      width: 15%;
       color: #1f3666;
       font-size: 16px;/*no*/
     }
@@ -1080,6 +1211,9 @@ export default {
 }
 .hei320 {
   height: 320px;
+}
+.hei600 {
+  height: 600px;
 }
 .hei450 {
   height: 450px;

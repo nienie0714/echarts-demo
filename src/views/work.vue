@@ -18,7 +18,7 @@
     <div class="content">
       <div class="sm-out-wrapper">
         <div>机场公司值班领导</div>
-        <div>{{a}}</div>
+        <div>{{dutyLeader}}</div>
       </div>
       <div class="out-wrapper">
         <!-- <div class="inner-title">旅客实时情况</div> -->
@@ -38,86 +38,88 @@
 </template>
 <script>
 import { mapActions } from 'vuex'
+
 export default {
   data() {
     return {
-      a: 'asdfasdf',
+      dutyLeader: 'asdfasdf',
       data: [
         {
-          key: 'totalGuardsRoom',
           name: '总值班室',
-          value: 'AAAA'
+          value: ''
         },
         {
-          key: '',
           name: '运行管理部',
-          value: 'BBBB'
+          value: ''
         },
         {
-          key: '',
           name: '安检护卫部',
-          value: 'CCCC'
+          value: ''
         },
         {
-          key: '',
           name: '机场公安局',
-          value: 'DDDD'
+          value: ''
         },
         {
-          key: '',
           name: '航站楼管理部',
-          value: 'EEEE'
+          value: ''
         },
         {
-          key: '',
           name: '航食公司',
-          value: 'FFFF'
+          value: ''
         },
         {
-          key: '',
           name: '指挥部',
-          value: 'GGGG'
+          value: ''
         },
         {
-          key: '',
           name: '安全航务部',
-          value: 'HHHH'
+          value: ''
         },
         {
-          key: '',
           name: '航服公司',
-          value: 'IIII'
+          value: ''
         },
         {
-          key: '',
           name: '机场管理部',
-          value: 'JJJJ'
+          value: ''
         },
         {
-          key: '',
           name: '地服公司',
-          value: 'KKKK'
+          value: ''
         },
         {
-          key: '',
           name: '物流公司',
-          value: 'LLLL'
+          value: ''
         },
         {
-          key: '',
           name: '物业公司',
-          value: 'MMMM'
+          value: ''
         }
       ]
     }
   },
+  created() {
+    this.queryDuty()
+  },
   methods: {
     ...mapActions(['ajax']),
-    queryFlightA() {
+    queryDuty() {
       let that = this
       this.ajax({
         name: 'queryDuty'
       }).then(res => {
+        let arr = res.filter(item => item.departmentName == '机场公司值班领导')
+        this.dutyLeader = arr[0].dutyLeader
+        let that = this
+        for(let i = 0; i< res.length; i++) {
+          for(let j = 0; j < that.data.length; j++) {
+            if (res[i].departmentName == that.data[j].name) {
+              this.$set(that.data[j], 'value', res[i].dutyLeader)
+              break
+            }
+          }
+        }
       })
     }
   }

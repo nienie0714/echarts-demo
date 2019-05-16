@@ -9,9 +9,12 @@ let api = {
   queryFlightD: { url: 'aoms-statistics/statistics/viewFlightStat/queryToday' }, // 查询当天的进港航班数据 :进港{"inOutFlag"："A"} 出港{"inOutFlag"："D"}
   queryFlight: { url: 'aoms-statistics/statistics/aomsFlightStat/queryToday' }, // 查询当日航班保障实况
   queryStand: { url: 'aoms-statistics/statistics/viewStandStat/queryToday' }, // 查询机位使用情况
-  queryPassenger: { url: 'aoms-statistics/statistics/viewDeparturePassengerStat/queryToday' } // 查询旅客
+  queryOtherStand: { url: 'aoms-statistics/basicdata/flightInOutStat/queryStandStat' }, // 查询廊桥位
+  queryPassenger: { url: 'aoms-statistics/statistics/viewDeparturePassengerStat/queryToday' }, // 查询旅客
+  queryDuty: { url: 'aoms-statistics/basicdata/dutyInfo/queryAll' }, // 查询旅客
+  queryGreen: { url: 'aoms-statistics/basicdata/flightInOutStat/queryBridgeStat' }, // 查询放行正常率
+  queryRate: { url: 'aoms-statistics/basicdata/flightInOutStat/queryFlightStat' } // 查询放行正常率
 }
-
 for (var k in api) {
   let urlHost = window.htp.apihost
   let url = api[k].url

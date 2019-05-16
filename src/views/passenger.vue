@@ -1,6 +1,6 @@
 <template>
   <div class="render pt">
-    <v-header title="旅客信息"></v-header>
+    <v-header title="旅客信息" back></v-header>
     <div class="content">
       <div class="pass-out-wrapper">
         <div class="pass-title">旅客实时情况</div>
